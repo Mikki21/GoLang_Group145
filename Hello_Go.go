@@ -1,1 +1,9 @@
-Some text new text
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Hello")
+}
