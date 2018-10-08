@@ -1,11 +1,11 @@
-package Count
+package counting
 
 import (
 	"reflect"
 	"testing"
 )
 
-func TestCount(t *testing.T) {
+func TestSort(t *testing.T) {
 	testCases := []struct {
 		name   string
 		arr    []int
@@ -19,9 +19,9 @@ func TestCount(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			actRes := CountSortSigned(testCase.arr)
+			actRes := Sort(testCase.arr)
 			if !reflect.DeepEqual(actRes, testCase.expRes) {
-				t.Errorf("%v. \nExpected: %v\nHave: %v\n", testCase.name, testCase.expRes, actRes)
+				t.Errorf("want %d but got %d", testCase.expRes, actRes)
 			}
 		})
 
