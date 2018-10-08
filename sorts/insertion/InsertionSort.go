@@ -5,16 +5,8 @@ import (
 )
 
 func opDec(a, b []int) []int {
-	a = a[j]
-	b = a[j-1]
-	fromSmaller := func(a, b int) bool {
-		return a <= b
-	}
 
-	fromBigger := func(a, b int) bool {
-		return a >= b
-	}
-	return opDec(a, b, fromBigger)
+	return opDec(a, b)
 }
 
 // InsertionSort
@@ -37,7 +29,7 @@ func InsertionSort(a []int, operation func(int, int) bool) []int {
 func main() {
 	a := []int{10, 77, 4, 68, 1, 707, 8, 12, 17, 8, 21, 15, 9, 55, 18, 58, 101, 48}
 	fmt.Printf("elements before sorting = %v\n", a)
-	a = InsertionSort(a)
+	a = InsertionSort(a, nil)
 	fmt.Printf("sorted elements = %v\n", a)
 }
 
