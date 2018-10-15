@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -61,7 +60,7 @@ func game() {
 		c, d = d, c
 	}
 
-	if c < a || (math.Pow(c, 2) < math.Pow(a, 2)+math.Pow(b, 2) && d <= 4*a*b/c) {
+	if c < a && d < b {
 		fmt.Print("Yes. You can put this one into the other.\n")
 	} else {
 		fmt.Print("No. You cannot put this one into the other.\n")
