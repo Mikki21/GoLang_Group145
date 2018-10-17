@@ -1,4 +1,8 @@
-package selection
+package main
+
+import (
+	"fmt"
+)
 
 //asc to identifier index of the smallest element in array
 func asc(a []int) int {
@@ -83,6 +87,11 @@ func SortOnPlace(a []int, operation func(a, b int) bool) []int {
 	return a
 }
 
-func selection() {
+func main() {
+	a := []int{4, 3, 6, 9, 12, 60, 2}
+	b := []int{4, -3, 6, -9, 12, -60, 2}
+	_ = b
+	fmt.Println(SortOnPlace(a, bigger))
 
+	fmt.Println(SortOnPlace(b, less))
 }

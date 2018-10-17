@@ -35,14 +35,14 @@ func compareLetters(l1 letter, l2 letter) (a int) {
 	return
 	//fmt.Println("Конверты невозможно вложить один в другой !")
 }
-func createLetter(readCnl func(string) string, imya string, visota string, shirina string, orderLet func(letter) letter) (let letter) {
+func createLetter(readCnl func(string) string, nameEnvelope string, height string, width string, orderLet func(letter) letter) (let letter) {
 	var temp string
 	fmt.Println("Введите название конверта: ")
-	let.name = readCnl(imya)
+	let.name = readCnl(nameEnvelope)
 
 	for {
 		fmt.Print("Значение высоты равно: ")
-		temp = readCnl(visota)
+		temp = readCnl(height)
 		let.a, _ = strconv.ParseFloat(temp, 64)
 		if let.a <= 0 {
 			fmt.Printf("Значение недопустимо '%v', введите повторно !\n", let.a)
@@ -52,7 +52,7 @@ func createLetter(readCnl func(string) string, imya string, visota string, shiri
 	}
 	for {
 		fmt.Print("Значение ширины равно:")
-		temp = readCnl(shirina)
+		temp = readCnl(width)
 		let.b, _ = strconv.ParseFloat(temp, 64)
 		if let.b <= 0 {
 			fmt.Printf("Значение недопустимо '%v', введите повторно !\n", let.b)

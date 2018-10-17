@@ -82,20 +82,20 @@ func TestFalseChecker(t *testing.T) {
 }
 func TestCreateLetter(t *testing.T) {
 	testCase := []struct {
-		name    string
-		func1   func(string) string
-		imya    string
-		visota  string
-		shirina string
-		func2   func(letter) letter
-		expRes  letter
+		name         string
+		func1        func(string) string
+		nameEnvelope string
+		height       string
+		width        string
+		func2        func(letter) letter
+		expRes       letter
 	}{
 		{"Test_1.", readConsole, "name", "10", "5", orderLetters, letter{"name", 5, 10}},
 		{"Test_2.", readConsole, "Triangle", "15", "1", orderLetters, letter{"Triangle", 1, 15}},
 	}
 	for _, testCase := range testCase {
 		t.Run(testCase.name, func(t *testing.T) {
-			actRes := createLetter(testCase.func1, testCase.imya, testCase.visota, testCase.shirina, testCase.func2)
+			actRes := createLetter(testCase.func1, testCase.nameEnvelope, testCase.height, testCase.width, testCase.func2)
 			if actRes != testCase.expRes {
 				t.Errorf("\nExp:%+v\nAct:%+v", testCase.expRes, actRes)
 			}
