@@ -54,6 +54,7 @@ func newTriangle(sent triangle) triangle {
 	return errTriangle
 }
 
+//struct for triangles
 type triangle struct {
 	name string
 	pl   float64
