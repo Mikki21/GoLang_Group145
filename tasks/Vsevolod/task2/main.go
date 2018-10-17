@@ -2,57 +2,41 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
-func scan() string {
+const message = "Incorrect input. It must be one non-Negative number."
+const msgAnsw = "Would you like to continue? If Yes, press y/yes."
+
+func scan() (string, error) {
 	in := bufio.NewScanner(os.Stdin)
 	in.Scan()
-	if err := in.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "Entering mistake", err)
+	err := in.Err()
+	if err != nil {
+		return "", err
 	}
-	return in.Text()
+	return in.Text(), err
 }
 
-func getValue(letter rune) (side string) {
-	fmt.Printf("Please, enter side %v: ", string(letter))
-	return scan()
+func getFloat(str string) (float64, error) {
+	return strconv.ParseFloat(str, 64)
 }
 
-func getAnswer() bool {
-	fmt.Print("Dear player, would you like to continue the game?\nIf you would like, press y/yes.\n")
-	res := strings.ToLower(scan())
-	return res == "y" || res == "yes"
+func getAnswer(str string) bool {
+	str = strings.ToLower(str)
+	return str == "y" || str == "yes"
 }
 
-func getFloat(item string) (float64, error) {
-	return strconv.ParseFloat(item, 64)
-}
-
-func getSide(letter rune) (side float64, err error) {
-	for {
-		side, err = getFloat(getValue(letter))
-		if err != nil {
-			fmt.Print("Incorrect Input. It must be one number, like \"3.14\". Please, try again.\n")
-			continue
-		}
-		if side <= 0 {
-			fmt.Print("Incorrect Input. Side must be positive. Please, try again.\n")
-			continue
-		}
-		break
-	}
-	return
-}
-
+/*
 func game() {
-	a, _ := getSide('a')
-	b, _ := getSide('b')
-	c, _ := getSide('c')
-	d, _ := getSide('d')
+	a, _ := getSide('a', scan)
+	b, _ := getSide('b', scan)
+	c, _ := getSide('c', scan)
+	d, _ := getSide('d', scan)
 	if a < b {
 		a, b = b, a
 	}
@@ -61,17 +45,68 @@ func game() {
 	}
 
 	if c < a && d < b {
-		fmt.Print("Yes. You can put this one into the other.\n")
+		fmt.Println("Yes")
 	} else {
-		fmt.Print("No. You cannot put this one into the other.\n")
+		fmt.Println("No")
 
 	}
+}
+*/
+
+func getSide(scan func() (string, error)) (float64, error) {
+	aStr, err := scan()
+	if err != nil {
+		return -1, errors.New(message)
+	}
+	side, err := getFloat(aStr)
+	if err != nil {
+		return -1, errors.New(message)
+	}
+	if side < 0 {
+		return side, errors.New(message)
+	}
+	return side, err
 }
 
 func main() {
 	answer := true
 	for answer {
-		game()
-		answer = getAnswer()
+		var side [4]float64
+		for i := 0; i < 4; i++ {
+			errGetSide := errors.New("init")
+			for errGetSide != nil {
+				fmt.Println("Enter side " + string(i+97) + ": ")
+				side[i], errGetSide = getSide(scan)
+				if errGetSide != nil {
+					println(message)
+				}
+			}
+		}
+		a, b, c, d := side[0], side[1], side[2], side[3]
+
+		if a < b {
+			a, b = b, a
+		}
+		if c < d {
+			c, d = d, c
+		}
+
+		if c <= a && d <= b {
+			fmt.Println("Yes")
+		} else {
+			fmt.Println("No")
+
+		}
+		println(msgAnsw)
+		answStr, _ := scan()
+		answer = getAnswer(answStr)
 	}
+
 }
+
+/*answer := true
+for answer {
+	game()
+	answer = getAnswer()
+}
+*/

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -9,84 +10,46 @@ import (
 	"strings"
 )
 
-func scan() string {
+const amtParam = 4
+const message = "Incorrect input. You should input <name>,<a>,<b>,<b>."
+
+func scan() (string, error) {
 	in := bufio.NewScanner(os.Stdin)
 	in.Scan()
-	if err := in.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "Entering mistake", err)
+	err := in.Err()
+	if err != nil {
+		return "", err
 	}
-	return in.Text()
+	return in.Text(), err
 }
 
-func getAnswer() bool {
-	fmt.Print("Sir(Miss), would you like to add one more triangle? If yes, press y/yes.\n")
-	res := strings.ToLower(scan())
-	return res == "y" || res == "yes"
+func getAnswer(str string) bool {
+	str = strings.ToLower(str)
+	return str == "y" || str == "yes"
 }
 
-func getData() (values []string) {
-	fmt.Print("Please, enter parameters of your Triangle:\n")
-	for _, value := range strings.Split(scan(), ",") {
-		values = append(values, strings.Trim(value, " 	"))
+func getDataTriangle(scan func() (string, error)) (outpstrs []string, err error) {
+	inpstr, err := scan()
+	if err != nil {
+		return nil, err
+	}
+	elements := strings.Split(inpstr, ",")
+	if len(elements) != amtParam {
+		return nil, errors.New("Incorrect amount of parameters")
+	}
+	for _, elem := range elements {
+		outpstrs = append(outpstrs, elem)
 	}
 	return
 }
 
-func warningMessage() {
-	fmt.Print("Incorrect input. You have to input 4 parametrs,\n separated only by ,: <name>,<a>,<b>,<c>.\n",
-		"It must be name of Triangle and sides\nTry again.\n")
-
+func getFloat(str string) (float64, error) {
+	return strconv.ParseFloat(str, 64)
 }
 
-func (t *triangle) setTriangle() {
-	var triangleName string
-	var triangleSides [3]float64
-	var err error
-	for {
-		data := getData()
-		if len(data) != 4 {
-			warningMessage()
-			continue
-		}
-
-		var countVoidItems int
-		for _, item := range data {
-			if item == "" {
-				countVoidItems++
-			}
-		}
-		if countVoidItems > 0 {
-			warningMessage()
-			continue
-		}
-
-		triangleName = data[0]
-
-		for i := 0; i < 3; i++ {
-			var errTemp error
-			triangleSides[i], errTemp = strconv.ParseFloat(data[i+1], 64)
-			if errTemp != nil {
-				err = errTemp
-			}
-		}
-
-		if err == nil && checkTriangle(triangleSides) {
-			break
-		}
-		if !checkTriangle(triangleSides) {
-			fmt.Print("You input wrong sides of Triangle.\n")
-		}
-		warningMessage()
-	}
-	t.name = triangleName
-	t.a = triangleSides[0]
-	t.b = triangleSides[1]
-	t.c = triangleSides[2]
-}
-
-func checkTriangle(sides [3]float64) bool {
-	isPositiveSides := sides[0] > 0 && sides[1] > 0 && sides[2] > 0
-	isExist := sides[0]+sides[1] > sides[2] && sides[1]+sides[2] > sides[0] && sides[0]+sides[2] > sides[1]
+func checkTriangle(a, b, c float64) bool {
+	isPositiveSides := a > 0 && b > 0 && c > 0
+	isExist := a+b > c && a+c > b && b+c > a
 	return isPositiveSides && isExist
 }
 
@@ -105,12 +68,6 @@ func (t *triangle) setArea() {
 	}
 }
 
-func addTriangle() (newTriangle triangle) {
-	newTriangle.setTriangle()
-	newTriangle.setArea()
-	return
-}
-
 func sort(t []triangle) {
 	for i := 0; i < len(t)-1; i++ {
 		for j := i + 1; j < len(t); j++ {
@@ -121,17 +78,65 @@ func sort(t []triangle) {
 	}
 }
 
+func addTriangle() (newTriangle triangle, ok bool) {
+	fmt.Println("Enter Triangle: ")
+	data, err := getDataTriangle(scan)
+	if err != nil {
+		fmt.Println(message)
+		return
+	}
+	a, err := getFloat(data[1])
+	if err != nil {
+		fmt.Println(message)
+		return
+	}
+	b, err := getFloat(data[2])
+	if err != nil {
+		fmt.Println(message)
+		return
+	}
+	c, err := getFloat(data[3])
+	if err != nil {
+		fmt.Println(message)
+		return
+	}
+	if !checkTriangle(a, b, c) {
+		fmt.Println("Triangle with your sides don't exist")
+		return
+	}
+	name := data[0]
+	newTriangle = triangle{name: name, a: a, b: b, c: c}
+	newTriangle.setArea()
+	return newTriangle, true
+}
+
+func printStrTr(t []triangle) (str string) {
+	str = "=================Triangle list:=================\n"
+	for i, item := range t {
+		str += strconv.Itoa(i+1) + ". [" + item.name + "]: " + fmt.Sprintf("%.2f", item.area) + " cm\n"
+	}
+	return
+}
+
 func main() {
 	triangles := []triangle{}
+
 	answer := true
 	for answer {
-		triangles = append(triangles, addTriangle())
-		answer = getAnswer()
+		var NewTriangle triangle
+		var ok bool
+		for !ok {
+			NewTriangle, ok = addTriangle()
+		}
+		triangles = append(triangles, NewTriangle)
+		fmt.Println("Would you like to add one more triangle? If yes, press y/yes: ")
+		respons, err := scan()
+		if err != nil {
+			fmt.Println(message)
+			return
+		}
+		answer = getAnswer(respons)
 	}
 	sort(triangles)
-	fmt.Print("=================Triangle list:=================\n")
-	for _, item := range triangles {
-		fmt.Printf("[%v]: %.2f cm\n", item.name, item.area)
-	}
-
+	fmt.Println(printStrTr(triangles))
 }

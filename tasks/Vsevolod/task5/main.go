@@ -7,16 +7,11 @@ import (
 	"strings"
 )
 
-func checkData(data []string) bool {
-	return len(data) == 2
-}
+const message = "Incorrect input. You need to input one number from 0 to 99. Try again."
 
-func getNumber(data []string) (number int, res bool) {
-	if checkData(data) {
-		number, err := strconv.ParseUint(data[1], 10, 64)
-		return int(number), err == nil
-	}
-	return
+func getInt(data string) (int, error) {
+	number, err := strconv.ParseUint(data, 10, 64)
+	return int(number), err
 }
 
 func convertNumber(number int) (convertedNumber string) {
@@ -60,15 +55,17 @@ func convertNumber(number int) (convertedNumber string) {
 	return strings.Trim(convertedNumber, " ")
 }
 
-func errorMessage() {
-	fmt.Print("Incorrect input. You need input one number from 0 to 99.\n Try again.")
-}
-
 func main() {
-	number, ok := getNumber(os.Args)
-	if ok && number < 100 {
-		fmt.Printf("%v - %v", number, convertNumber(number))
-	} else {
-		errorMessage()
+	data := os.Args[1:]
+	if len(data) != 1 {
+		println(message)
+		return
 	}
+	number, err := getInt(data[0])
+	if err != nil {
+		println(message)
+		return
+	}
+	fmt.Printf("%v - %v", number, convertNumber(number))
+
 }
