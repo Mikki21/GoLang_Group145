@@ -19,7 +19,7 @@ func readFile(folder string) string {
 	return q
 }
 
-func fileCount(s string, subs string) (a int) {
+func countFile(s string, subs string) (a int) {
 	file, err := os.Open(s)
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +56,7 @@ func main() {
 	args := os.Args
 	switch len(args) {
 	case 3:
-		fmt.Println("Number of filled strings: ", fileCount(args[1], args[2]))
+		fmt.Println("Number of filled strings: ", countFile(args[1], args[2]))
 	case 4:
 		changeFile(args[1], args[2], args[3])
 		fmt.Printf("Result string in the file:\n\t%v", readFile(args[1]))

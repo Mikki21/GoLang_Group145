@@ -7,40 +7,61 @@ import (
 )
 
 const (
-	odd  string = "* "
-	even string = " *"
+	oddString  string = "* "
+	evenString string = " *"
+	instruct   string = "Program prints ChessDesk according to the entered parametrs '(go run .\\main.go <height> <width>)' "
 )
 
-func ChessDesk(args []string) {
-	h, errH := strconv.ParseUint(args[0], 10, 64)
-	w, errW := strconv.ParseUint(args[1], 10, 64)
-	fmt.Println(w)
-	if errH == nil && errW == nil {
-		for iH := 1; iH < int(h+1); iH++ {
-			for iW := 1; iW < int(w+1); iW++ {
-				if iH%2 == 0 {
-					fmt.Print(even)
-				} else {
-					fmt.Print(odd)
-				}
+func parseParametrs(param []string) (int, int, error) {
+	h, errH := strconv.ParseUint(param[1], 10, 64)
+	if errH != nil {
+		return 0, 0, errH
+	}
+	w, errW := strconv.ParseUint(param[2], 10, 64)
+	if errW != nil {
+		return 0, 0, errW
+	}
+	return int(h), int(w), nil
+}
 
+func createDesk(h, w int) (res string, err error) {
+	if h < 1 || w < 1 {
+		err = fmt.Errorf("invalid values")
+		return
+	}
+	for x := 1; x < h+1; x++ {
+		for y := 1; y < w+1; y++ {
+			if x%2 == 0 {
+				//fmt.Print(evenString)
+				res += evenString
+			} else {
+				//fmt.Print(oddString)
+				res += oddString
 			}
-			fmt.Println("")
 		}
+		//fmt.Println()
+		res += "\n"
 	}
-	if h == 0 || w == 0 {
-		fmt.Println("Enter positive Values")
-	}
+	return
 }
 
 func main() {
-	args := os.Args
-	switch len(args) {
+	console := os.Args
+	switch len(console) {
 	case 1:
-		fmt.Println("Program prints ChessDesk according to the entered parametrs '(go run .\\main.go <height> <width>)' ")
+		fmt.Println(instruct)
 	case 3:
-		ChessDesk(args[1:])
+		height, width, err := parseParametrs(console)
+		if err != nil {
+			fmt.Println("Invalid paramaetrs!")
+		} else {
+			tempStr, err := createDesk(height, width)
+			if err != nil {
+				fmt.Println("Invalid paramaetrs!")
+			}
+			fmt.Print(tempStr)
+		}
 	default:
-		fmt.Println("Only two parametrs are available to enter!")
+		fmt.Println("Only two parametrs are available to enter !")
 	}
 }

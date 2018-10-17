@@ -9,27 +9,45 @@ import (
 	"strings"
 )
 
-func newTriangle() (res triangle) {
-	fmt.Print("Enter new triangle <name>,<side_1>,<side_2>,<side_3>\n")
-	reader := bufio.NewScanner(os.Stdin)
-	reader.Scan()
-	errTriangle := triangle{pl: 0.0}
-	s := strings.Split(reader.Text(), ",")
+func readConsole(check string) (res string) {
+	if check == "" {
+		reader := bufio.NewScanner(os.Stdin)
+		reader.Scan()
+		res = reader.Text()
+		return
+	}
+	res = check
+	return
+}
+
+func newTriangle(sent triangle) triangle {
+	errTriangle := triangle{}
+	s := strings.Split(readConsole(""), ",")
 	if len(s) == 4 {
 		for i := 1; i < len(s); i++ {
 			s[i] = strings.Replace(s[i], " ", "", -1)
 			s[i] = strings.Replace(s[i], "	", "", -1)
 		}
+
 		a, err := strconv.ParseFloat(s[1], 64)
+		if err != nil {
+			return errTriangle
+		}
+
 		b, err := strconv.ParseFloat(s[2], 64)
+		if err != nil {
+			return errTriangle
+		}
+
 		c, err := strconv.ParseFloat(s[3], 64)
-		_ = err
-		fmt.Println(a, b, c)
+		if err != nil {
+			return errTriangle
+		}
 		if a+b > c && a+c > b && b+c > a {
-			res.name = s[0]
-			p := a + b + c
-			res.pl = math.Sqrt(p * (p - a) * (p - b) * (p - c))
-			return res
+			sent.name = s[0]
+			p := (a + b + c) / 2
+			sent.pl = math.Sqrt(p * (p - a) * (p - b) * (p - c))
+			return sent
 		}
 		// fmt.Println(s)
 	}
@@ -45,7 +63,6 @@ type triangle struct {
 func bigger(a, b float64) (k bool) {
 	if a > b {
 		k = true
-
 	}
 	return k
 }
@@ -65,12 +82,10 @@ func SortOnPlace(a []float64, operation func(a, b float64) bool) []float64 {
 	return a
 }
 
-func falseChecker() bool {
-	fmt.Print("Do you want to add another triangle (enter y/yes to confirm)? ")
-	var container string
-	fmt.Fscanln(os.Stdin, &container)
-	container = strings.ToLower(container)
-	if container == "y" || container == "yes" {
+//fmt.Print("Do you want to add another triangle (enter y/yes to confirm)? ")
+func falseChecker(checkStr string) bool {
+	checkStr = strings.ToLower(checkStr)
+	if checkStr == "y" || checkStr == "yes" {
 		return true
 	}
 	return false
@@ -84,19 +99,23 @@ func addPlosha(x []triangle) (x1 []float64) {
 }
 
 func main() {
-	x := []triangle{}
+	var x triangle
+	var sliceOfTriangle []triangle
 	check := true
 	for check {
-		if s := newTriangle(); s.pl == 0 {
+		fmt.Print("Enter new triangle <name>,<side_1>,<side_2>,<side_3>\n")
+		x = newTriangle(x)
+		if x.pl == 0 {
 			fmt.Println("Impossible to create triangle with entered parameters...")
 		} else {
-			x = append(x, s)
+			sliceOfTriangle = append(sliceOfTriangle, x)
 		}
-		check = falseChecker()
+		fmt.Println("Do you want to add another triangle (enter y/yes to confirm)? ")
+		check = falseChecker(readConsole(""))
 	}
-	x1 := SortOnPlace(addPlosha(x), bigger)
+	squaresList := SortOnPlace(addPlosha(sliceOfTriangle), bigger)
 	fmt.Println("=====================Triangles list:=====================")
-	for i := 0; i < len(x); i++ {
-		fmt.Printf("%v.[Triangle %v]: %.2f cm\n", i+1, x[i].name, x1[i])
+	for i := 0; i < len(sliceOfTriangle); i++ {
+		fmt.Printf("\t%v.[Triangle %v]: %.2f cm\n", i+1, sliceOfTriangle[i].name, squaresList[i])
 	}
 }
