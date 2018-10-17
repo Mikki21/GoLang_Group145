@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
-func getData(osArgs []string) (uint64, uint64, bool) {
-	if len(osArgs) == 3 {
-		lower, errLower := strconv.ParseUint(osArgs[1], 10, 64)
-		upper, errUpper := strconv.ParseUint(osArgs[2], 10, 64)
-		return lower, upper, errLower == nil && errUpper == nil
-	}
-	return 0, 0, false
+const magicNumber = 93
+const errorMessage = "Incprrect parameters. You should input 2 different\nintegers from 0 to 18446744073709551615.\n Try again"
+
+func getInt(data string) (uint64, error) {
+	number, err := strconv.ParseUint(data, 10, 64)
+	return number, err
 }
 
 func fibonacci(n int) (fib uint64) {
@@ -28,16 +28,8 @@ func fibonacci(n int) (fib uint64) {
 	return uint64(n)
 }
 
-func swap(a, b uint64) (uint64, uint64) {
-	if b < a {
-		return b, a
-	}
-	return a, b
-}
-
 func sequence(a, b uint64) (elements []uint64) {
-
-	for i := 0; i <= 93; i++ {
+	for i := 0; i <= magicNumber; i++ {
 		if a <= fibonacci(i) && fibonacci(i) < b {
 			elements = append(elements, fibonacci(i))
 		}
@@ -45,30 +37,35 @@ func sequence(a, b uint64) (elements []uint64) {
 	return
 }
 
-func errorMessage() {
-	fmt.Print("Incprrect parameters.\nYou should input 2 different\nintegers from 0 to 18446744073709551615.\n Try again")
-}
-
-func printSequence(elements []uint64) {
-	switch len(elements) {
-	case 0:
-		fmt.Print("No elements in this range")
-	case 1:
-		fmt.Printf("%v", elements[0])
-	default:
-		for i := 0; i < len(elements)-1; i++ {
-			fmt.Printf("%v, ", elements[i])
-		}
-		fmt.Printf("%v", elements[len(elements)-1])
+func prntSeq(elements []uint64) (str string) {
+	for _, elem := range elements {
+		str += strconv.FormatUint(elem, 10) + ", "
 	}
+	return strings.Trim(str, ", ")
 }
 
 func main() {
-	a, b, isUint := getData(os.Args)
-	if isUint {
-		a, b = swap(a, b)
-		printSequence(sequence(a, b))
-	} else {
-		errorMessage()
+	data := os.Args[1:]
+	if len(data) != 2 {
+		println(errorMessage)
+		return
 	}
+	a, err := getInt(data[0])
+	if err != nil {
+		println(errorMessage)
+		return
+	}
+	b, err := getInt(data[1])
+	if err != nil {
+		println(errorMessage)
+		return
+	}
+	if a == b {
+		println(errorMessage)
+		return
+	}
+	if a > b {
+		a, b = b, a
+	}
+	fmt.Printf("%v", prntSeq(sequence(a, b)))
 }

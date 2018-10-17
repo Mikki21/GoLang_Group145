@@ -7,16 +7,18 @@ import (
 	"strings"
 )
 
+const message = "Incorrect data. You need to input path.\nFile must consist of word Moskow or Piter"
+
 func readPath() (string, error) {
 	in := bufio.NewScanner(os.Stdin)
 	in.Scan()
 	return in.Text(), in.Err()
 }
 
-func readFile(path string) ([]string, error) {
+func readFile(path string) (string, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer file.Close()
 
@@ -25,20 +27,8 @@ func readFile(path string) ([]string, error) {
 	for in.Scan() {
 		lines = append(lines, in.Text())
 	}
-	return lines, in.Err()
+	return strings.Trim(strings.Join(lines, ""), " 	"), in.Err()
 
-}
-
-func fortunateTicket(text []string) (string, int) {
-	indicator := strings.Trim(strings.Join(text, ""), " 	")
-	switch indicator {
-	case "Moskow":
-		return "Moskow", moscow()
-	case "Piter":
-		return "Piter", piter()
-	default:
-		return "Incorrect Indicator. It must be Moscow or Piter. Only one word", -1
-	}
 }
 
 func moscow() (amt int) {
@@ -64,28 +54,29 @@ func piter() (amt int) {
 	return
 }
 
-func printFortunateTicket(s []string) {
-	indicator, amt := fortunateTicket(s)
-	if amt != -1 {
-		fmt.Printf("%v %v", indicator, amt)
-	} else {
-		fmt.Printf("%v", indicator)
-	}
-
-}
-
 func main() {
-
 	fmt.Print("Enter path: ")
-	path, errPath := readPath()
-	if errPath == nil {
-		data, err := readFile(path)
-		if err == nil {
-			printFortunateTicket(data)
-		} else {
-			fmt.Printf("%v", err)
-		}
-	} else {
-		fmt.Printf("%v", errPath)
+	path, err := readPath()
+	if err != nil {
+		fmt.Printf("%v\n", err)
+		println(message)
+		return
 	}
+	text, err := readFile(path)
+	if err != nil {
+		fmt.Printf("%v", err)
+		println(message)
+		return
+	}
+	algorythm := map[string]func() int{
+		"Moskow": moscow,
+		"Piter":  piter,
+	}
+	answer, ok := algorythm[text]
+	if !ok {
+		println(message)
+		return
+	}
+	fmt.Printf("%v", answer())
+
 }

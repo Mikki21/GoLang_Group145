@@ -1,22 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"os"
 	"strconv"
+	"strings"
 )
 
-func errorMessage() {
-	fmt.Print("Incorrect Input. You should input one integer more than 1.\n Please, try again.")
-}
+const errorMessage = "Incorrect Input. You should input one integer more than 1.\n Please, try again."
 
-func getNumber(osArgs []string) (int, bool) {
-	if len(osArgs) == 2 {
-		number, err := strconv.ParseInt(osArgs[1], 10, 64)
-		return int(number), err == nil
-	}
-	return 0, false
+func getInt(data string) (int, error) {
+	number, err := strconv.ParseUint(data, 10, 64)
+	return int(number), err
 }
 
 func sequence(n int) (sqrSequence []int) {
@@ -26,19 +21,29 @@ func sequence(n int) (sqrSequence []int) {
 	return
 }
 
-func printSequence(sqrSequence []int) {
-	for i := 0; i < len(sqrSequence)-1; i++ {
-		fmt.Printf("%v, ", sqrSequence[i])
+func prntSeq(elements []int) (str string) {
+	for _, elem := range elements {
+		str += strconv.Itoa(elem) + ", "
 	}
-	fmt.Printf("%v", sqrSequence[len(sqrSequence)-1])
+	return strings.Trim(str, ", ")
 }
 
 func main() {
-	n, isInt := getNumber(os.Args)
-	if n > 1 && isInt {
-		printSequence(sequence(n))
-	} else {
-		errorMessage()
+	data := os.Args[1:]
+	if len(data) != 1 {
+		println(errorMessage)
+		return
 	}
+
+	n, err := getInt(data[0])
+	if err != nil {
+		println(errorMessage)
+		return
+	}
+	if n < 2 {
+		println(errorMessage)
+		return
+	}
+	println(prntSeq(sequence(n)))
 
 }
