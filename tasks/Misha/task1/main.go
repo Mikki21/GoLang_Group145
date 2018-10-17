@@ -32,14 +32,14 @@ func createDesk(h, w int) (res string, err error) {
 	for x := 1; x < h+1; x++ {
 		for y := 1; y < w+1; y++ {
 			if x%2 == 0 {
-				//fmt.Print(evenString)
+				fmt.Print(evenString)
 				res += evenString
 			} else {
-				//fmt.Print(oddString)
+				fmt.Print(oddString)
 				res += oddString
 			}
 		}
-		//fmt.Println()
+		fmt.Println()
 		res += "\n"
 	}
 	return

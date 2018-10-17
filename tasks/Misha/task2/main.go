@@ -24,16 +24,14 @@ func compareLetters(l1 letter, l2 letter) (a int) {
 	if l2.a < l1.a && l2.b < l1.b {
 		a = 1
 		return
-		//fmt.Printf("Конверт '%+v' можно вложить в конверт '%+v' ", l2.name, l1.name)
 	}
 	if l2.a > l1.a && l2.b > l1.b {
 		a = 2
 		return
-		//fmt.Printf("Конверт '%+v' можно вложить в конверт '%+v' ", l1.name, l2.name)
+
 	}
 	a = 3
 	return
-	//fmt.Println("Конверты невозможно вложить один в другой !")
 }
 func createLetter(readCnl func(string) string, nameEnvelope string, height string, width string, orderLet func(letter) letter) (let letter) {
 	var temp string
@@ -45,7 +43,7 @@ func createLetter(readCnl func(string) string, nameEnvelope string, height strin
 		temp = readCnl(height)
 		let.a, _ = strconv.ParseFloat(temp, 64)
 		if let.a <= 0 {
-			fmt.Printf("Значение недопустимо '%v', введите повторно !\n", let.a)
+			fmt.Printf("Значение недопустимо , введите повторно !\n")
 		} else {
 			break
 		}
@@ -55,7 +53,7 @@ func createLetter(readCnl func(string) string, nameEnvelope string, height strin
 		temp = readCnl(width)
 		let.b, _ = strconv.ParseFloat(temp, 64)
 		if let.b <= 0 {
-			fmt.Printf("Значение недопустимо '%v', введите повторно !\n", let.b)
+			fmt.Printf("Значение недопустимо , введите повторно !\n")
 		} else {
 			break
 		}
@@ -86,7 +84,7 @@ func falseChecker(checkStr string) bool {
 func main() {
 	check := true
 	for check {
-		fmt.Println("\tПервый конерт!")
+		fmt.Println("\tПервый конверт!")
 		exmp := createLetter(readConsole, "", "", "", orderLetters)
 		fmt.Println("\tВторой конверт!")
 		exmp1 := createLetter(readConsole, "", "", "", orderLetters)

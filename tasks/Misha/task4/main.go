@@ -50,9 +50,7 @@ func changeFile(s string, subs string, change string) {
 	output := strings.Join(lines, "")
 	ioutil.WriteFile(s, []byte(output), 0644)
 }
-
 func main() {
-
 	args := os.Args
 	switch len(args) {
 	case 3:
